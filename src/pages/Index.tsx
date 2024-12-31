@@ -1,10 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { CalculatorForm } from '@/components/CalculatorForm';
 import { ResultsDisplay } from '@/components/ResultsDisplay';
 import { DividendChart } from '@/components/DividendChart';
 import { calculateDividendResults } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +18,8 @@ import {
 } from "@/components/ui/tooltip";
 
 const Index = () => {
+  const { toast } = useToast();
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [values, setValues] = useState({
     investmentAmount: 10000,
     sharePrice: 27.23,
@@ -37,7 +44,7 @@ const Index = () => {
   const results = useMemo(() => {
     return calculateDividendResults(
       values.investmentAmount,
-      (values.dividendAmount / values.sharePrice) * 100, // Convert to yield
+      (values.dividendAmount / values.sharePrice) * 100,
       values.dividendGrowthRate,
       values.years,
       values.reinvestDividends,
@@ -48,6 +55,35 @@ const Index = () => {
       values.sharePriceGrowthRate
     );
   }, [values]);
+
+  const exportToPDF = async () => {
+    if (!resultsRef.current) return;
+
+    try {
+      const canvas = await html2canvas(resultsRef.current);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save('dividend-calculator-results.pdf');
+
+      toast({
+        title: "Success",
+        description: "Results exported to PDF successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to export results to PDF",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -74,7 +110,15 @@ const Index = () => {
             <CalculatorForm values={values} onChange={handleChange} />
           </div>
           
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-8" ref={resultsRef}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
+              <Button onClick={exportToPDF} variant="outline" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export to PDF
+              </Button>
+            </div>
+            
             <ResultsDisplay results={results} />
             <Card>
               <CardHeader>
