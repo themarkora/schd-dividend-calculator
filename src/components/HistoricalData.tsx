@@ -11,6 +11,12 @@ import {
 
 const historicalData = [
   {
+    year: '2024',
+    dividendYield: '3.96%',
+    totalReturn: '-0.36%',
+    dividendGrowth: '8.0%',
+  },
+  {
     year: '2023',
     dividendYield: '3.51%',
     totalReturn: '2.85%',
@@ -33,12 +39,6 @@ const historicalData = [
     dividendYield: '3.62%',
     totalReturn: '11.32%',
     dividendGrowth: '3.5%',
-  },
-  {
-    year: '2019',
-    dividendYield: '3.08%',
-    totalReturn: '23.81%',
-    dividendGrowth: '9.2%',
   },
 ];
 
