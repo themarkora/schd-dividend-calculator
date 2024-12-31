@@ -1,34 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DividendChart } from '@/components/DividendChart';
 import { calculateDividendResults } from '@/lib/utils';
-import { CalculatorForm } from '@/components/CalculatorForm';
-import { ResultsDisplay } from '@/components/ResultsDisplay';
 
 const AdvancedAnalysis = () => {
-  const [values, setValues] = useState({
-    investmentAmount: 100000,
-    dividendYield: 3.5,
-    growthRate: 5,
-    years: 20,
-    reinvestDividends: true,
-    taxRate: 15,
-  });
-
-  const handleChange = (field: string, value: number | boolean) => {
-    setValues(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const results = calculateDividendResults(
-    values.investmentAmount,
-    values.dividendYield,
-    values.growthRate,
-    values.years,
-    values.reinvestDividends,
-    values.taxRate
+  // Sample data for demonstration
+  const sampleResults = calculateDividendResults(
+    100000, // Initial investment
+    3.5,    // Dividend yield
+    5,      // Growth rate
+    20,     // Years
+    true,   // Reinvest dividends
+    15      // Tax rate
   );
 
   return (
@@ -41,20 +24,70 @@ const AdvancedAnalysis = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <CalculatorForm values={values} onChange={handleChange} />
-          </div>
-          
-          <div className="lg:col-span-2 space-y-8">
-            <ResultsDisplay results={results} />
-            
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Portfolio Growth Projection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DividendChart data={sampleResults.yearlyData} />
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Portfolio Growth Projection</CardTitle>
+                <CardTitle className="text-lg">Total Dividends</CardTitle>
               </CardHeader>
               <CardContent>
-                <DividendChart data={results.yearlyData} />
+                <p className="text-3xl font-bold text-primary">
+                  ${Math.round(sampleResults.totalDividends).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Cumulative dividends earned
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Final Portfolio Value</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-primary">
+                  ${Math.round(sampleResults.finalPortfolioValue).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Total investment value
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Annual Dividend Income</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-primary">
+                  ${Math.round(sampleResults.annualDividendIncome).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Projected yearly income
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Yield on Cost</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-primary">
+                  {sampleResults.yieldOnCost.toFixed(2)}%
+                </p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Return on initial investment
+                </p>
               </CardContent>
             </Card>
           </div>
