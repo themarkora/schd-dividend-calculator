@@ -20,6 +20,7 @@ import {
 const Index = () => {
   const { toast } = useToast();
   const pageRef = useRef<HTMLDivElement>(null);
+  
   const [values, setValues] = useState({
     investmentAmount: 10000,
     sharePrice: 27.23,
@@ -60,34 +61,55 @@ const Index = () => {
     if (!pageRef.current) return;
 
     try {
-      const canvas = await html2canvas(pageRef.current, {
-        scale: 2, // Increase quality
+      // First, capture the header section
+      const headerSection = pageRef.current.querySelector('.header-section');
+      const resultsSection = pageRef.current.querySelector('.results-section');
+      
+      if (!headerSection || !resultsSection) return;
+
+      // Capture header
+      const headerCanvas = await html2canvas(headerSection as HTMLElement, {
+        scale: 2,
         useCORS: true,
         logging: false,
-        windowWidth: pageRef.current.scrollWidth,
-        windowHeight: pageRef.current.scrollHeight
       });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      
+
+      // Capture results
+      const resultsCanvas = await html2canvas(resultsSection as HTMLElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
       const pdf = new jsPDF('p', 'mm', 'a4');
-      let position = 0;
+      const pageWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const margin = 10; // margin in mm
 
-      // First page
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Add header to first page
+      const headerWidth = pageWidth - (2 * margin);
+      const headerHeight = (headerCanvas.height * headerWidth) / headerCanvas.width;
+      pdf.addImage(
+        headerCanvas.toDataURL('image/png'),
+        'PNG',
+        margin,
+        margin,
+        headerWidth,
+        headerHeight
+      );
 
-      // Add subsequent pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+      // Add results to new page
+      pdf.addPage();
+      const resultsWidth = pageWidth - (2 * margin);
+      const resultsHeight = (resultsCanvas.height * resultsWidth) / resultsCanvas.width;
+      pdf.addImage(
+        resultsCanvas.toDataURL('image/png'),
+        'PNG',
+        margin,
+        margin,
+        resultsWidth,
+        resultsHeight
+      );
 
       pdf.save('dividend-calculator-results.pdf');
 
@@ -107,46 +129,49 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8" ref={pageRef}>
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">SCHD Dividend Calculator</h1>
-          <div className="flex items-center justify-center gap-2">
-            <p className="text-lg text-gray-600">Plan your dividend investment strategy</p>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="h-5 w-5 text-gray-400" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs">SCHD is a popular dividend ETF known for its quality dividend growth focus</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        <div className="header-section">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">SCHD Dividend Calculator</h1>
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-lg text-gray-600">Plan your dividend investment strategy</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-5 w-5 text-gray-400" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">SCHD is a popular dividend ETF known for its quality dividend growth focus</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            <div className="lg:col-span-1">
+              <CalculatorForm values={values} onChange={handleChange} />
+            </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <CalculatorForm values={values} onChange={handleChange} />
-          </div>
           
-          <div className="lg:col-span-2 space-y-8">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
-              <Button onClick={exportToPDF} variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Export to PDF
-              </Button>
-            </div>
+        <div className="results-section lg:col-span-2 space-y-8">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
+            <Button onClick={exportToPDF} variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Export to PDF
+            </Button>
+          </div>
             
-            <ResultsDisplay results={results} />
-            <Card>
-              <CardHeader>
-                <CardTitle>Dividend Growth Projection</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DividendChart data={results.yearlyData} />
-              </CardContent>
-            </Card>
+          <ResultsDisplay results={results} />
+          <Card>
+            <CardHeader>
+              <CardTitle>Dividend Growth Projection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DividendChart data={results.yearlyData} />
+            </CardContent>
+          </Card>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
@@ -201,7 +226,6 @@ const Index = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
         </div>
       </div>
     </div>
