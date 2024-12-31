@@ -157,7 +157,10 @@ const Index = () => {
         <div className="results-section lg:col-span-2 space-y-8">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
-            <Button onClick={exportToPDF} variant="outline" className="gap-2">
+            <Button 
+              onClick={exportToPDF} 
+              className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white gap-2 font-medium shadow-sm"
+            >
               <Download className="h-4 w-4" />
               Export to PDF
             </Button>
