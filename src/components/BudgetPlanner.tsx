@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,19 @@ const BudgetPlanner = () => {
   const [newAmount, setNewAmount] = useState("");
   const [itemType, setItemType] = useState<"income" | "expense">("expense");
   const { toast } = useToast();
+
+  // Load items from session storage on component mount
+  useEffect(() => {
+    const savedItems = sessionStorage.getItem("budgetItems");
+    if (savedItems) {
+      setItems(JSON.parse(savedItems));
+    }
+  }, []);
+
+  // Save items to session storage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem("budgetItems", JSON.stringify(items));
+  }, [items]);
 
   const addItem = () => {
     if (!newCategory || !newAmount) {
