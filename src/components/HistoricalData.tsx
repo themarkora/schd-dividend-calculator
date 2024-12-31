@@ -12,20 +12,38 @@ const HistoricalData = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SCHD Historical Performance</CardTitle>
+        <CardTitle className="text-2xl">SCHD Historical Performance</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {historicalData.map((data) => (
-            <div key={data.year} className="p-4 border rounded-lg">
-              <div className="text-lg font-semibold">{data.year}</div>
-              <div className="space-y-2 text-sm">
-                <div>Dividend Yield: {data.dividendYield}</div>
-                <div>Total Return: {data.totalReturn}</div>
-                <div>Dividend Growth: {data.dividendGrowth}</div>
-              </div>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="py-3 px-4 text-left font-semibold">Year</th>
+                <th className="py-3 px-4 text-left font-semibold">Dividend Yield</th>
+                <th className="py-3 px-4 text-left font-semibold">Total Return</th>
+                <th className="py-3 px-4 text-left font-semibold">Dividend Growth</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historicalData.map((data) => (
+                <tr key={data.year} className="border-b hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 font-medium">{data.year}</td>
+                  <td className="py-3 px-4 text-primary">{data.dividendYield}</td>
+                  <td className={`py-3 px-4 ${
+                    parseFloat(data.totalReturn) >= 0 ? 'text-secondary' : 'text-destructive'
+                  }`}>
+                    {data.totalReturn}
+                  </td>
+                  <td className="py-3 px-4 text-secondary">{data.dividendGrowth}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 text-sm text-muted-foreground">
+          <p>* Data sourced from historical SCHD performance records</p>
+          <p>* Total Return includes both price appreciation and dividend payments</p>
         </div>
       </CardContent>
     </Card>
