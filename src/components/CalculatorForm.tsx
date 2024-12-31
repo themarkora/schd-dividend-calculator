@@ -29,7 +29,7 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
       
       <div className="space-y-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Label htmlFor="investmentAmount">Initial Investment ($)</Label>
             <TooltipProvider>
               <Tooltip>
@@ -47,12 +47,12 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             type="number"
             value={values.investmentAmount}
             onChange={(e) => onChange('investmentAmount', Number(e.target.value))}
-            className="calculator-input"
+            className="text-right pr-4 h-12"
           />
         </div>
 
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Label htmlFor="dividendYield">Dividend Yield (%)</Label>
             <TooltipProvider>
               <Tooltip>
@@ -71,12 +71,12 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             step="0.01"
             value={values.dividendYield}
             onChange={(e) => onChange('dividendYield', Number(e.target.value))}
-            className="calculator-input"
+            className="text-right pr-4 h-12"
           />
         </div>
 
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Label htmlFor="growthRate">Annual Growth Rate (%)</Label>
             <TooltipProvider>
               <Tooltip>
@@ -95,12 +95,12 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             step="0.1"
             value={values.growthRate}
             onChange={(e) => onChange('growthRate', Number(e.target.value))}
-            className="calculator-input"
+            className="text-right pr-4 h-12"
           />
         </div>
 
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Label htmlFor="years">Investment Period (Years)</Label>
             <TooltipProvider>
               <Tooltip>
@@ -120,12 +120,12 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             max="50"
             value={values.years}
             onChange={(e) => onChange('years', Number(e.target.value))}
-            className="calculator-input"
+            className="text-right pr-4 h-12"
           />
         </div>
 
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
             <Label htmlFor="taxRate">Tax Rate (%)</Label>
             <TooltipProvider>
               <Tooltip>
@@ -145,7 +145,7 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             max="100"
             value={values.taxRate}
             onChange={(e) => onChange('taxRate', Number(e.target.value))}
-            className="calculator-input"
+            className="text-right pr-4 h-12"
           />
         </div>
 
