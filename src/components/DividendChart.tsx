@@ -1,6 +1,7 @@
 import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChartData {
   year: number;
@@ -13,6 +14,8 @@ interface DividendChartProps {
 }
 
 export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="chart-container h-[400px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -20,8 +23,8 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
           data={data} 
           margin={{ 
             top: 20, 
-            right: 80,  // Increased right margin for the right axis labels
-            left: 80,   // Increased left margin for the left axis labels
+            right: isMobile ? 40 : 80,
+            left: isMobile ? 40 : 80,
             bottom: 20 
           }}
         >
@@ -31,8 +34,10 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
             label={{ 
               value: 'Year', 
               position: 'insideBottom', 
-              offset: -10 
+              offset: -10,
+              fontSize: isMobile ? 10 : 12
             }}
+            tick={{ fontSize: isMobile ? 10 : 12 }}
           />
           <YAxis 
             yAxisId="left"
@@ -40,10 +45,12 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
               value: 'Portfolio Value ($)', 
               angle: -90, 
               position: 'insideLeft',
-              offset: -60  // Adjusted offset for better positioning
+              offset: isMobile ? -30 : -60,
+              fontSize: isMobile ? 10 : 12
             }}
-            tickFormatter={(value) => formatCurrency(value)}
-            width={80}    // Fixed width for the left axis
+            tickFormatter={(value) => isMobile ? formatCurrency(value, true) : formatCurrency(value)}
+            width={isMobile ? 60 : 80}
+            tick={{ fontSize: isMobile ? 10 : 12 }}
           />
           <YAxis 
             yAxisId="right" 
@@ -52,18 +59,22 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
               value: 'Dividend Income ($)', 
               angle: 90, 
               position: 'insideRight',
-              offset: -50  // Adjusted offset for better positioning
+              offset: isMobile ? -30 : -50,
+              fontSize: isMobile ? 10 : 12
             }}
-            tickFormatter={(value) => formatCurrency(value)}
-            width={80}    // Fixed width for the right axis
+            tickFormatter={(value) => isMobile ? formatCurrency(value, true) : formatCurrency(value)}
+            width={isMobile ? 60 : 80}
+            tick={{ fontSize: isMobile ? 10 : 12 }}
           />
           <Tooltip 
             formatter={(value: number) => formatCurrency(value)}
             labelFormatter={(label) => `Year ${label}`}
+            contentStyle={{ fontSize: isMobile ? '12px' : '14px' }}
           />
           <Legend 
             verticalAlign="top"
             height={36}
+            wrapperStyle={{ fontSize: isMobile ? '12px' : '14px' }}
           />
           <Line
             yAxisId="left"
@@ -72,7 +83,7 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
             stroke="#2563eb"
             name="Portfolio Value"
             strokeWidth={2}
-            dot={{ r: 4 }}
+            dot={{ r: isMobile ? 2 : 4 }}
           />
           <Line
             yAxisId="right"
@@ -81,7 +92,7 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
             stroke="#16a34a"
             name="Dividend Income"
             strokeWidth={2}
-            dot={{ r: 4 }}
+            dot={{ r: isMobile ? 2 : 4 }}
           />
         </LineChart>
       </ResponsiveContainer>
