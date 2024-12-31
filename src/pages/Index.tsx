@@ -19,7 +19,7 @@ import {
 
 const Index = () => {
   const { toast } = useToast();
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
   const [values, setValues] = useState({
     investmentAmount: 10000,
     sharePrice: 27.23,
@@ -57,19 +57,38 @@ const Index = () => {
   }, [values]);
 
   const exportToPDF = async () => {
-    if (!resultsRef.current) return;
+    if (!pageRef.current) return;
 
     try {
-      const canvas = await html2canvas(resultsRef.current);
-      const imgData = canvas.toDataURL('image/png');
-      
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
+      const canvas = await html2canvas(pageRef.current, {
+        scale: 2, // Increase quality
+        useCORS: true,
+        logging: false,
+        windowWidth: pageRef.current.scrollWidth,
+        windowHeight: pageRef.current.scrollHeight
       });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      // First page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add subsequent pages if needed
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
       pdf.save('dividend-calculator-results.pdf');
 
       toast({
@@ -86,7 +105,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8" ref={pageRef}>
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">SCHD Dividend Calculator</h1>
@@ -110,7 +129,7 @@ const Index = () => {
             <CalculatorForm values={values} onChange={handleChange} />
           </div>
           
-          <div className="lg:col-span-2 space-y-8" ref={resultsRef}>
+          <div className="lg:col-span-2 space-y-8">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
               <Button onClick={exportToPDF} variant="outline" className="gap-2">
