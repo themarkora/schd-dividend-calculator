@@ -15,14 +15,19 @@ import {
 const Index = () => {
   const [values, setValues] = useState({
     investmentAmount: 10000,
-    dividendYield: 3.5,
-    growthRate: 5,
-    years: 10,
+    sharePrice: 27.23,
+    dividendAmount: 0.2645,
+    dividendFrequency: 'quarterly',
+    dividendGrowthRate: 11.18,
+    sharePriceGrowthRate: 7.34,
+    extraInvestment: 0,
+    extraInvestmentFrequency: 'monthly',
+    years: 20,
     reinvestDividends: true,
     taxRate: 0,
   });
 
-  const handleChange = (field: string, value: number | boolean) => {
+  const handleChange = (field: string, value: number | boolean | string) => {
     setValues(prev => ({
       ...prev,
       [field]: value
@@ -32,11 +37,15 @@ const Index = () => {
   const results = useMemo(() => {
     return calculateDividendResults(
       values.investmentAmount,
-      values.dividendYield,
-      values.growthRate,
+      (values.dividendAmount / values.sharePrice) * 100, // Convert to yield
+      values.dividendGrowthRate,
       values.years,
       values.reinvestDividends,
-      values.taxRate
+      values.taxRate,
+      values.extraInvestment,
+      values.extraInvestmentFrequency,
+      values.dividendFrequency,
+      values.sharePriceGrowthRate
     );
   }, [values]);
 
