@@ -35,8 +35,10 @@ export const calculateDividendResults = (
   reinvestDividends: boolean,
   taxRate: number
 ): { 
-  totalValue: number;
   totalDividends: number;
+  finalPortfolioValue: number;
+  annualDividendIncome: number;
+  yieldOnCost: number;
   yearlyData: YearlyData[];
 } => {
   let currentValue = initialInvestment;
@@ -64,9 +66,17 @@ export const calculateDividendResults = (
     });
   }
 
+  // Calculate final year's dividend income for annual income
+  const finalYearDividends = currentValue * (dividendYield / 100) * (1 - taxRate / 100);
+  
+  // Calculate yield on cost
+  const yieldOnCost = (finalYearDividends / initialInvestment) * 100;
+
   return {
-    totalValue: currentValue,
     totalDividends,
+    finalPortfolioValue: currentValue,
+    annualDividendIncome: finalYearDividends,
+    yieldOnCost,
     yearlyData,
   };
 };
