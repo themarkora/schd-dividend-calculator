@@ -6,6 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
+  // Handle invalid or infinite values
+  if (!isFinite(amount) || isNaN(amount)) {
+    return '$0';
+  }
+  
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -26,6 +31,17 @@ export function calculateDividendResults(
   dividendFrequency: string = 'quarterly',
   sharePriceGrowthRate: number = 0
 ) {
+  // Validate inputs to prevent NaN or Infinity results
+  if (!isFinite(investmentAmount) || investmentAmount <= 0) {
+    return {
+      totalDividends: 0,
+      finalPortfolioValue: 0,
+      annualDividendIncome: 0,
+      yieldOnCost: 0,
+      yearlyData: []
+    };
+  }
+
   let portfolioValue = investmentAmount;
   let totalDividends = 0;
   const yearlyData = [];
@@ -49,6 +65,8 @@ export function calculateDividendResults(
     let dividendIncome = (portfolioValue * (currentYield / 100)) / dividendMultiplier * dividendMultiplier;
     let afterTaxDividend = dividendIncome * taxMultiplier;
 
+    // Prevent negative or infinite values
+    afterTaxDividend = isFinite(afterTaxDividend) ? afterTaxDividend : 0;
     totalDividends += afterTaxDividend;
 
     if (reinvestDividends) {
@@ -57,6 +75,9 @@ export function calculateDividendResults(
 
     // Apply share price growth
     portfolioValue *= (1 + (sharePriceGrowthRate / 100));
+
+    // Prevent negative or infinite values
+    portfolioValue = isFinite(portfolioValue) ? portfolioValue : 0;
 
     yearlyData.push({
       year,
@@ -72,10 +93,10 @@ export function calculateDividendResults(
   const yieldOnCost = (lastYearDividends / investmentAmount) * 100;
 
   return {
-    totalDividends,
-    finalPortfolioValue: portfolioValue,
-    annualDividendIncome: lastYearDividends,
-    yieldOnCost,
+    totalDividends: isFinite(totalDividends) ? totalDividends : 0,
+    finalPortfolioValue: isFinite(portfolioValue) ? portfolioValue : 0,
+    annualDividendIncome: isFinite(lastYearDividends) ? lastYearDividends : 0,
+    yieldOnCost: isFinite(yieldOnCost) ? yieldOnCost : 0,
     yearlyData,
   };
 }

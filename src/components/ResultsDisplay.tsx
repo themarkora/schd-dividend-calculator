@@ -12,6 +12,14 @@ interface ResultsDisplayProps {
 }
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results }) => {
+  // Helper function to format yield on cost
+  const formatYieldOnCost = (value: number): string => {
+    if (!isFinite(value) || isNaN(value)) {
+      return '0.00%';
+    }
+    return `${value.toFixed(2)}%`;
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card className="bg-white">
@@ -61,7 +69,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results }) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-secondary">
-            {results.yieldOnCost.toFixed(2)}%
+            {formatYieldOnCost(results.yieldOnCost)}
           </div>
         </CardContent>
       </Card>
