@@ -1,10 +1,16 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Target, Calculator, TrendingUp, PiggyBank } from "lucide-react";
+import { Target, Calculator, TrendingUp, PiggyBank, DollarSign, CalendarIcon, ChartBar, Check, ArrowUp, Percent } from "lucide-react";
 import { Link } from "react-router-dom";
+import BudgetPlanner from "@/components/BudgetPlanner";
+import GoalSetting from "@/components/GoalSetting";
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PlanningTools = () => {
-  const tools = [
+  const [activeTab, setActiveTab] = useState("budget");
+
+  const comingSoonTools = [
     {
       title: "Retirement Calculator",
       description: "Plan your retirement savings and estimate future needs",
@@ -15,18 +21,6 @@ const PlanningTools = () => {
       title: "Investment Portfolio Planner",
       description: "Build and analyze your investment portfolio strategy",
       icon: TrendingUp,
-      comingSoon: true
-    },
-    {
-      title: "Budget Planner",
-      description: "Create and manage your monthly budget",
-      icon: Calculator,
-      comingSoon: true
-    },
-    {
-      title: "Goal Setting",
-      description: "Set and track your financial goals",
-      icon: Target,
       comingSoon: true
     }
   ];
@@ -41,34 +35,50 @@ const PlanningTools = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tools.map((tool, index) => {
-            const Icon = tool.icon;
-            return (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Icon className="w-6 h-6 text-primary" />
+        <Tabs defaultValue="budget" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="budget">Budget Planner</TabsTrigger>
+            <TabsTrigger value="goals">Goal Setting</TabsTrigger>
+          </TabsList>
+          <TabsContent value="budget">
+            <BudgetPlanner />
+          </TabsContent>
+          <TabsContent value="goals">
+            <GoalSetting />
+          </TabsContent>
+        </Tabs>
+
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold mb-6">Coming Soon</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {comingSoonTools.map((tool, index) => {
+              const Icon = tool.icon;
+              return (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle>{tool.title}</CardTitle>
+                        <CardDescription>{tool.description}</CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle>{tool.title}</CardTitle>
-                      <CardDescription>{tool.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full"
-                    variant={tool.comingSoon ? "outline" : "default"}
-                    disabled={tool.comingSoon}
-                  >
-                    {tool.comingSoon ? "Coming Soon" : "Get Started"}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      className="w-full"
+                      variant="outline"
+                      disabled
+                    >
+                      Coming Soon
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
