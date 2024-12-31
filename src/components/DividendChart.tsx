@@ -17,82 +17,85 @@ export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="chart-container h-[400px]">
+    <div className="chart-container h-[500px] bg-white p-6 rounded-lg">
+      <h2 className="text-2xl font-bold mb-6">Dividend Growth Projection</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart 
           data={data} 
           margin={{ 
             top: 20, 
-            right: isMobile ? 40 : 80,
-            left: isMobile ? 40 : 80,
+            right: isMobile ? 20 : 40,
+            left: isMobile ? 20 : 60,
             bottom: 20 
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="#e5e7eb"
+            vertical={false}
+          />
           <XAxis 
             dataKey="year" 
-            label={{ 
-              value: 'Year', 
-              position: 'insideBottom', 
-              offset: -10,
-              fontSize: isMobile ? 10 : 12
-            }}
-            tick={{ fontSize: isMobile ? 10 : 12 }}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#6b7280', fontSize: 12 }}
+            tickFormatter={(value) => `${value}`}
           />
           <YAxis 
             yAxisId="left"
-            label={{ 
-              value: 'Portfolio Value ($)', 
-              angle: -90, 
-              position: 'insideLeft',
-              offset: isMobile ? -30 : -60,
-              fontSize: isMobile ? 10 : 12
-            }}
-            tickFormatter={(value) => isMobile ? formatCurrency(value, true) : formatCurrency(value)}
-            width={isMobile ? 60 : 80}
-            tick={{ fontSize: isMobile ? 10 : 12 }}
+            orientation="left"
+            tickFormatter={(value) => `$${(value / 1000).toFixed(1)}K`}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#6b7280', fontSize: 12 }}
+            width={60}
           />
           <YAxis 
             yAxisId="right" 
             orientation="right"
-            label={{ 
-              value: 'Dividend Income ($)', 
-              angle: 90, 
-              position: 'insideRight',
-              offset: isMobile ? -30 : -50,
-              fontSize: isMobile ? 10 : 12
-            }}
-            tickFormatter={(value) => isMobile ? formatCurrency(value, true) : formatCurrency(value)}
-            width={isMobile ? 60 : 80}
-            tick={{ fontSize: isMobile ? 10 : 12 }}
+            tickFormatter={(value) => `$${(value / 1000).toFixed(1)}K`}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: '#6b7280', fontSize: 12 }}
+            width={60}
           />
           <Tooltip 
             formatter={(value: number) => formatCurrency(value)}
             labelFormatter={(label) => `Year ${label}`}
-            contentStyle={{ fontSize: isMobile ? '12px' : '14px' }}
+            contentStyle={{ 
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              padding: '8px'
+            }}
           />
           <Legend 
             verticalAlign="top"
             height={36}
-            wrapperStyle={{ fontSize: isMobile ? '12px' : '14px' }}
+            iconType="circle"
+            formatter={(value) => (
+              <span style={{ color: '#374151', fontSize: '14px' }}>
+                {value === 'portfolioValue' ? 'Portfolio Value' : 'Dividend Income'}
+              </span>
+            )}
           />
           <Line
             yAxisId="left"
             type="monotone"
             dataKey="portfolioValue"
             stroke="#2563eb"
-            name="Portfolio Value"
-            strokeWidth={2}
-            dot={{ r: isMobile ? 2 : 4 }}
+            strokeWidth={2.5}
+            dot={{ r: 0 }}
+            activeDot={{ r: 6, fill: '#2563eb' }}
           />
           <Line
             yAxisId="right"
             type="monotone"
             dataKey="dividendIncome"
             stroke="#16a34a"
-            name="Dividend Income"
-            strokeWidth={2}
-            dot={{ r: isMobile ? 2 : 4 }}
+            strokeWidth={2.5}
+            dot={{ r: 0 }}
+            activeDot={{ r: 6, fill: '#16a34a' }}
           />
         </LineChart>
       </ResponsiveContainer>
