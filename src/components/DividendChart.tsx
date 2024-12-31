@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChartData {
   year: number;
@@ -14,7 +14,7 @@ interface DividendChartProps {
 }
 
 export const DividendChart: React.FC<DividendChartProps> = ({ data }) => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
 
   const mobileMargin = { top: 20, right: 10, left: 10, bottom: 20 };
   const desktopMargin = { top: 20, right: 80, left: 80, bottom: 20 };
