@@ -30,7 +30,7 @@ const Index = () => {
   };
 
   const results = useMemo(() => {
-    const calculatedResults = calculateDividendResults(
+    return calculateDividendResults(
       values.investmentAmount,
       values.dividendYield,
       values.growthRate,
@@ -38,14 +38,6 @@ const Index = () => {
       values.reinvestDividends,
       values.taxRate
     );
-
-    return {
-      totalDividends: calculatedResults.totalDividends,
-      finalPortfolioValue: calculatedResults.finalPortfolioValue,
-      annualDividendIncome: calculatedResults.annualDividendIncome,
-      yieldOnCost: calculatedResults.yieldOnCost,
-      yearlyData: calculatedResults.yearlyData,
-    };
   }, [values]);
 
   return (

@@ -1,82 +1,60 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatCurrency = (value: number, compact: boolean = false) => {
-  if (compact) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
-  }
-  
+export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(value);
-};
-
-interface YearlyData {
-  year: number;
-  dividendIncome: number;
-  portfolioValue: number;
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
-export const calculateDividendResults = (
-  initialInvestment: number,
+export function calculateDividendResults(
+  investmentAmount: number,
   dividendYield: number,
   growthRate: number,
   years: number,
   reinvestDividends: boolean,
   taxRate: number
-): { 
-  totalDividends: number;
-  finalPortfolioValue: number;
-  annualDividendIncome: number;
-  yieldOnCost: number;
-  yearlyData: YearlyData[];
-} => {
-  let currentValue = initialInvestment;
+) {
+  let portfolioValue = investmentAmount;
   let totalDividends = 0;
-  const yearlyData: YearlyData[] = [];
+  const yearlyData = [];
+  let currentYield = dividendYield;
+  const taxMultiplier = 1 - (taxRate / 100);
 
   for (let year = 1; year <= years; year++) {
-    // Calculate dividends for the year
-    const dividends = currentValue * (dividendYield / 100);
-    const afterTaxDividends = dividends * (1 - taxRate / 100);
-    totalDividends += afterTaxDividends;
+    let dividendIncome = portfolioValue * (currentYield / 100);
+    let afterTaxDividend = dividendIncome * taxMultiplier;
 
-    // Apply growth rate to the portfolio value
-    currentValue = currentValue * (1 + growthRate / 100);
+    totalDividends += afterTaxDividend;
 
-    // If reinvesting dividends, add them to the portfolio value
     if (reinvestDividends) {
-      currentValue += afterTaxDividends;
+      portfolioValue += afterTaxDividend;
     }
 
     yearlyData.push({
       year,
-      dividendIncome: afterTaxDividends,
-      portfolioValue: currentValue,
+      dividendIncome: afterTaxDividend,
+      portfolioValue,
     });
+
+    currentYield *= (1 + (growthRate / 100));
   }
 
-  // Calculate final year's dividend income for annual income
-  const finalYearDividends = currentValue * (dividendYield / 100) * (1 - taxRate / 100);
-  
-  // Calculate yield on cost
-  const yieldOnCost = (finalYearDividends / initialInvestment) * 100;
+  const lastYearDividends = portfolioValue * (currentYield / 100) * taxMultiplier;
+  const yieldOnCost = (lastYearDividends / investmentAmount) * 100;
 
   return {
     totalDividends,
-    finalPortfolioValue: currentValue,
-    annualDividendIncome: finalYearDividends,
+    finalPortfolioValue: portfolioValue,
+    annualDividendIncome: lastYearDividends,
     yieldOnCost,
     yearlyData,
   };
-};
+}
