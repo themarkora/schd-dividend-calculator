@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Calculator, BookOpen, Target, Receipt } from "lucide-react";
+import { Calculator, BookOpen, Receipt } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
@@ -8,7 +8,6 @@ const Navigation = () => {
   const navItems = [
     { path: "/", label: "Calculator", icon: Calculator },
     { path: "/education", label: "Education Hub", icon: BookOpen },
-    { path: "/planning-tools", label: "Planning Tools", icon: Target },
     { path: "/tax-analysis", label: "Tax & Cost", icon: Receipt },
   ];
 
