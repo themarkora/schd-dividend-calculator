@@ -17,10 +17,14 @@ export function formatCurrency(amount: number): string {
 export function calculateDividendResults(
   investmentAmount: number,
   dividendYield: number,
-  growthRate: number,
+  dividendGrowthRate: number,
   years: number,
   reinvestDividends: boolean,
-  taxRate: number
+  taxRate: number,
+  extraInvestment: number = 0,
+  extraInvestmentFrequency: string = 'monthly',
+  dividendFrequency: string = 'quarterly',
+  sharePriceGrowthRate: number = 0
 ) {
   let portfolioValue = investmentAmount;
   let totalDividends = 0;
@@ -28,8 +32,21 @@ export function calculateDividendResults(
   let currentYield = dividendYield;
   const taxMultiplier = 1 - (taxRate / 100);
 
+  // Calculate frequency multipliers
+  const extraInvestmentMultiplier = 
+    extraInvestmentFrequency === 'monthly' ? 12 :
+    extraInvestmentFrequency === 'quarterly' ? 4 : 1;
+
+  const dividendMultiplier = 
+    dividendFrequency === 'monthly' ? 12 :
+    dividendFrequency === 'quarterly' ? 4 : 1;
+
   for (let year = 1; year <= years; year++) {
-    let dividendIncome = portfolioValue * (currentYield / 100);
+    // Add extra investments throughout the year
+    portfolioValue += extraInvestment * extraInvestmentMultiplier;
+
+    // Calculate dividends for the year
+    let dividendIncome = (portfolioValue * (currentYield / 100)) / dividendMultiplier * dividendMultiplier;
     let afterTaxDividend = dividendIncome * taxMultiplier;
 
     totalDividends += afterTaxDividend;
@@ -38,13 +55,17 @@ export function calculateDividendResults(
       portfolioValue += afterTaxDividend;
     }
 
+    // Apply share price growth
+    portfolioValue *= (1 + (sharePriceGrowthRate / 100));
+
     yearlyData.push({
       year,
       dividendIncome: afterTaxDividend,
       portfolioValue,
     });
 
-    currentYield *= (1 + (growthRate / 100));
+    // Increase dividend yield by growth rate
+    currentYield *= (1 + (dividendGrowthRate / 100));
   }
 
   const lastYearDividends = portfolioValue * (currentYield / 100) * taxMultiplier;
