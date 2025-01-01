@@ -16,7 +16,7 @@ import TipsAndFeatures from '@/components/TipsAndFeatures';
 
 const Index = () => {
   const { toast } = useToast();
-  const pageRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   
   const [values, setValues] = useState({
     investmentAmount: 10000,
@@ -55,52 +55,33 @@ const Index = () => {
   }, [values]);
 
   const exportToPDF = async () => {
-    if (!pageRef.current) return;
+    if (!resultsRef.current) return;
 
     try {
-      const headerSection = pageRef.current.querySelector('.header-section');
-      const resultsSection = pageRef.current.querySelector('.results-section');
-      
-      if (!headerSection || !resultsSection) return;
-
-      const headerCanvas = await html2canvas(headerSection as HTMLElement, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const resultsCanvas = await html2canvas(resultsSection as HTMLElement, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = 210;
-      const pageHeight = 297;
+      const pageWidth = pdf.internal.pageSize.getWidth();
       const margin = 10;
+      let currentY = margin;
 
-      const headerWidth = pageWidth - (2 * margin);
-      const headerHeight = (headerCanvas.height * headerWidth) / headerCanvas.width;
+      // Capture and add results section
+      const canvas = await html2canvas(resultsRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FAFAFA'
+      });
+
+      const imgWidth = pageWidth - (2 * margin);
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add the image to the PDF
       pdf.addImage(
-        headerCanvas.toDataURL('image/png'),
+        canvas.toDataURL('image/png'),
         'PNG',
         margin,
-        margin,
-        headerWidth,
-        headerHeight
-      );
-
-      pdf.addPage();
-      const resultsWidth = pageWidth - (2 * margin);
-      const resultsHeight = (resultsCanvas.height * resultsWidth) / resultsCanvas.width;
-      pdf.addImage(
-        resultsCanvas.toDataURL('image/png'),
-        'PNG',
-        margin,
-        margin,
-        resultsWidth,
-        resultsHeight
+        currentY,
+        imgWidth,
+        imgHeight
       );
 
       pdf.save('dividend-calculator-results.pdf');
@@ -110,6 +91,7 @@ const Index = () => {
         description: "Results exported to PDF successfully",
       });
     } catch (error) {
+      console.error('PDF Export Error:', error);
       toast({
         title: "Error",
         description: "Failed to export results to PDF",
@@ -133,7 +115,7 @@ const Index = () => {
           </div>
 
           {/* Right Column - Results and Charts */}
-          <div className="lg:col-span-8 space-y-8">
+          <div className="lg:col-span-8 space-y-8" ref={resultsRef}>
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
               <Button 
