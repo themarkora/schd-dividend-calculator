@@ -5,8 +5,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const FaqSection = () => {
+  const isMobile = useIsMobile();
+
   return (
     <Card>
       <CardHeader>
@@ -27,7 +30,9 @@ const FaqSection = () => {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger>How often does SCHD pay dividends?</AccordionTrigger>
+            <AccordionTrigger className={isMobile ? "text-left leading-normal pr-8" : ""}>
+              How often does SCHD pay dividends?
+            </AccordionTrigger>
             <AccordionContent>
               SCHD pays dividends quarterly, typically in March, June, September, and December. The fund has a history of consistently growing its dividend payments year over year.
             </AccordionContent>
