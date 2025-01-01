@@ -3,7 +3,6 @@ import { CalculatorForm } from '@/components/CalculatorForm';
 import { ResultsDisplay } from '@/components/ResultsDisplay';
 import { DividendChart } from '@/components/DividendChart';
 import { calculateDividendResults } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -121,45 +120,47 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8" ref={pageRef}>
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="header-section">
-          <CalculatorHeader />
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            <div className="lg:col-span-1">
-              <CalculatorForm values={values} onChange={handleChange} />
+      <div className="max-w-[1400px] mx-auto">
+        <CalculatorHeader />
+        
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column - Calculator Form */}
+          <div className="lg:col-span-4">
+            <CalculatorForm values={values} onChange={handleChange} />
+          </div>
+
+          {/* Right Column - Results and Charts */}
+          <div className="lg:col-span-8 space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
+              <Button 
+                onClick={exportToPDF} 
+                className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white gap-2 font-medium shadow-sm"
+              >
+                <Download className="h-4 w-4" />
+                Export to PDF
+              </Button>
+            </div>
+            
+            <ResultsDisplay results={results} />
+            
+            <div className="space-y-8">
+              <div className="bg-white rounded-lg shadow-sm">
+                <DividendChart data={results.yearlyData} />
+              </div>
+              
+              <EtfComparison />
+              
+              <HistoricalData />
             </div>
           </div>
         </div>
-          
-        <div className="results-section lg:col-span-2 space-y-8">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold text-gray-900">Results</h2>
-            <Button 
-              onClick={exportToPDF} 
-              className="bg-[#0EA5E9] hover:bg-[#0284C7] text-white gap-2 font-medium shadow-sm"
-            >
-              <Download className="h-4 w-4" />
-              Export to PDF
-            </Button>
-          </div>
-            
-          <ResultsDisplay results={results} />
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Dividend Growth Projection</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DividendChart data={results.yearlyData} />
-            </CardContent>
-          </Card>
 
-          <EtfComparison />
-
-          <HistoricalData />
-          
+        <div className="mt-12">
           <TipsAndFeatures />
+        </div>
 
+        <div className="mt-12">
           <FaqSection />
         </div>
       </div>
