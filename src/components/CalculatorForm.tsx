@@ -36,9 +36,7 @@ interface CalculatorFormProps {
 
 export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange }) => {
   return (
-    <div className="space-y-6 p-6 bg-white rounded-lg shadow-sm">
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">Calculator Inputs</h2>
-      
+    <div className="space-y-6">
       <div className="space-y-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -310,6 +308,7 @@ export const CalculatorForm: React.FC<CalculatorFormProps> = ({ values, onChange
             onCheckedChange={(checked) => onChange('reinvestDividends', checked)}
           />
         </div>
+
       </div>
     </div>
   );
