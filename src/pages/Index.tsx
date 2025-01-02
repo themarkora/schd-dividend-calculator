@@ -19,15 +19,15 @@ const Index = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   
   const [values, setValues] = useState({
-    investmentAmount: 10000,
-    sharePrice: 27.23,
-    dividendAmount: 0.2645,
+    investmentAmount: 0,
+    sharePrice: 0,
+    dividendAmount: 0,
     dividendFrequency: 'quarterly',
-    dividendGrowthRate: 11.18,
-    sharePriceGrowthRate: 7.34,
+    dividendGrowthRate: 0,
+    sharePriceGrowthRate: 0,
     extraInvestment: 0,
     extraInvestmentFrequency: 'monthly',
-    years: 20,
+    years: 0,
     reinvestDividends: true,
     taxRate: 0,
   });
