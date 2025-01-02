@@ -43,25 +43,25 @@ export function calculateDividendResults(
     dividendFrequency === 'quarterly' ? 4 : 1;
 
   for (let year = 0; year < years; year++) {
+    // Calculate current share price with growth
+    const currentSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year);
+    
     // Add extra investments throughout the year
-    shares += (extraInvestment * extraInvestmentMultiplier) / 
-              (sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year));
+    const yearlyExtraInvestment = extraInvestment * extraInvestmentMultiplier;
+    shares += yearlyExtraInvestment / currentSharePrice;
 
     // Calculate dividends for the year
-    let annualDividend = shares * quarterlyDividend * dividendMultiplier;
-    let afterTaxDividend = annualDividend * taxMultiplier;
-    
+    const annualDividend = shares * quarterlyDividend * dividendMultiplier;
+    const afterTaxDividend = annualDividend * taxMultiplier;
     totalDividends += afterTaxDividend;
 
     // If reinvesting dividends, buy more shares at current price
     if (reinvestDividends) {
-      let currentSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year);
       shares += afterTaxDividend / currentSharePrice;
     }
 
     // Calculate current portfolio value
-    let currentSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year);
-    let portfolioValue = shares * currentSharePrice;
+    const portfolioValue = shares * currentSharePrice;
 
     yearlyData.push({
       year: year + 1,
@@ -74,10 +74,10 @@ export function calculateDividendResults(
   }
 
   // Calculate final values
-  let finalSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, years);
-  let portfolioValue = shares * finalSharePrice;
-  let finalAnnualDividend = shares * quarterlyDividend * dividendMultiplier * taxMultiplier;
-  let yieldOnCost = (finalAnnualDividend / investmentAmount) * 100;
+  const finalSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, years);
+  const portfolioValue = shares * finalSharePrice;
+  const finalAnnualDividend = shares * quarterlyDividend * dividendMultiplier * taxMultiplier;
+  const yieldOnCost = (finalAnnualDividend / investmentAmount) * 100;
 
   return {
     totalDividends,
