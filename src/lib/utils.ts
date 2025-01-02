@@ -16,20 +16,21 @@ export function formatCurrency(amount: number): string {
 
 export function calculateDividendResults(
   investmentAmount: number,
-  dividendYield: number,
+  sharePrice: number,
+  dividendPerShare: number,
   dividendGrowthRate: number,
+  sharePriceGrowthRate: number,
   years: number,
   reinvestDividends: boolean,
   taxRate: number,
   extraInvestment: number = 0,
   extraInvestmentFrequency: string = 'monthly',
-  dividendFrequency: string = 'quarterly',
-  sharePriceGrowthRate: number = 0
+  dividendFrequency: string = 'quarterly'
 ) {
-  let portfolioValue = investmentAmount;
+  let shares = investmentAmount / sharePrice;
   let totalDividends = 0;
+  let quarterlyDividend = dividendPerShare;
   const yearlyData = [];
-  let currentYield = dividendYield;
   const taxMultiplier = 1 - (taxRate / 100);
 
   // Calculate frequency multipliers
@@ -41,40 +42,47 @@ export function calculateDividendResults(
     dividendFrequency === 'monthly' ? 12 :
     dividendFrequency === 'quarterly' ? 4 : 1;
 
-  for (let year = 1; year <= years; year++) {
+  for (let year = 0; year < years; year++) {
     // Add extra investments throughout the year
-    portfolioValue += extraInvestment * extraInvestmentMultiplier;
+    shares += (extraInvestment * extraInvestmentMultiplier) / 
+              (sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year));
 
     // Calculate dividends for the year
-    let dividendIncome = (portfolioValue * (currentYield / 100)) / dividendMultiplier * dividendMultiplier;
-    let afterTaxDividend = dividendIncome * taxMultiplier;
-
+    let annualDividend = shares * quarterlyDividend * dividendMultiplier;
+    let afterTaxDividend = annualDividend * taxMultiplier;
+    
     totalDividends += afterTaxDividend;
 
+    // If reinvesting dividends, buy more shares at current price
     if (reinvestDividends) {
-      portfolioValue += afterTaxDividend;
+      let currentSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year);
+      shares += afterTaxDividend / currentSharePrice;
     }
 
-    // Apply share price growth
-    portfolioValue *= (1 + (sharePriceGrowthRate / 100));
+    // Calculate current portfolio value
+    let currentSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, year);
+    let portfolioValue = shares * currentSharePrice;
 
     yearlyData.push({
-      year,
+      year: year + 1,
       dividendIncome: afterTaxDividend,
-      portfolioValue,
+      portfolioValue: portfolioValue,
     });
 
-    // Increase dividend yield by growth rate
-    currentYield *= (1 + (dividendGrowthRate / 100));
+    // Increase dividend for next year
+    quarterlyDividend *= (1 + dividendGrowthRate / 100);
   }
 
-  const lastYearDividends = portfolioValue * (currentYield / 100) * taxMultiplier;
-  const yieldOnCost = (lastYearDividends / investmentAmount) * 100;
+  // Calculate final values
+  let finalSharePrice = sharePrice * Math.pow(1 + sharePriceGrowthRate / 100, years);
+  let portfolioValue = shares * finalSharePrice;
+  let finalAnnualDividend = shares * quarterlyDividend * dividendMultiplier * taxMultiplier;
+  let yieldOnCost = (finalAnnualDividend / investmentAmount) * 100;
 
   return {
     totalDividends,
     finalPortfolioValue: portfolioValue,
-    annualDividendIncome: lastYearDividends,
+    annualDividendIncome: finalAnnualDividend,
     yieldOnCost,
     yearlyData,
   };
