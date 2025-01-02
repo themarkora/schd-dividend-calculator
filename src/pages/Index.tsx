@@ -42,15 +42,16 @@ const Index = () => {
   const results = useMemo(() => {
     return calculateDividendResults(
       values.investmentAmount,
-      (values.dividendAmount / values.sharePrice) * 100,
+      values.sharePrice,
+      values.dividendAmount,
       values.dividendGrowthRate,
+      values.sharePriceGrowthRate,
       values.years,
       values.reinvestDividends,
       values.taxRate,
       values.extraInvestment,
       values.extraInvestmentFrequency,
-      values.dividendFrequency,
-      values.sharePriceGrowthRate
+      values.dividendFrequency
     );
   }, [values]);
 
