@@ -19,15 +19,15 @@ const Index = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   
   const [values, setValues] = useState({
-    investmentAmount: 0,
-    sharePrice: 0,
-    dividendAmount: 0,
+    investmentAmount: 10000,
+    sharePrice: 27.23,
+    dividendAmount: 0.2645,
     dividendFrequency: 'quarterly',
-    dividendGrowthRate: 0,
-    sharePriceGrowthRate: 0,
+    dividendGrowthRate: 11.18,
+    sharePriceGrowthRate: 7.34,
     extraInvestment: 0,
     extraInvestmentFrequency: 'monthly',
-    years: 0,
+    years: 20,
     reinvestDividends: true,
     taxRate: 0,
   });
@@ -42,8 +42,7 @@ const Index = () => {
   const results = useMemo(() => {
     return calculateDividendResults(
       values.investmentAmount,
-      values.sharePrice,
-      values.dividendAmount,
+      (values.dividendAmount / values.sharePrice) * 100,
       values.dividendGrowthRate,
       values.years,
       values.reinvestDividends,
@@ -64,6 +63,7 @@ const Index = () => {
       const margin = 10;
       let currentY = margin;
 
+      // Capture and add results section
       const canvas = await html2canvas(resultsRef.current, {
         scale: 2,
         useCORS: true,
@@ -74,6 +74,7 @@ const Index = () => {
       const imgWidth = pageWidth - (2 * margin);
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
+      // Add the image to the PDF
       pdf.addImage(
         canvas.toDataURL('image/png'),
         'PNG',

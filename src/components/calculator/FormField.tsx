@@ -32,22 +32,6 @@ export const FormField: React.FC<FormFieldProps> = ({
   min,
   max
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    
-    // If the input is empty or just a minus sign, set value to 0
-    if (inputValue === '' || inputValue === '-') {
-      onChange(0);
-      return;
-    }
-
-    // Convert to number and update if valid
-    const numValue = parseFloat(inputValue);
-    if (!isNaN(numValue)) {
-      onChange(numValue);
-    }
-  };
-
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
@@ -69,8 +53,8 @@ export const FormField: React.FC<FormFieldProps> = ({
         step={step}
         min={min}
         max={max}
-        value={value === 0 ? '' : value}
-        onChange={handleChange}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
         className="text-right pr-4 h-12"
       />
     </div>
